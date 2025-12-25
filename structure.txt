@@ -1,0 +1,17 @@
+Exercises/Exercise_2
+Exercises/Exercise_3
+Exercises/Exercise_4
+Exercises/Exercise_5
+Exercises/Exercise_6
+Exercises/Exercise_7
+Exercises/Exercise_8
+Exercises/Exercise_9
+Exercises/Exercise_10
+Exercises/Exercise_11
+Exercises/Exercise_12
+
+Programming_Assignments/Programming_Assignments_1
+Programming_Assignments/Programming_Assignments_2
+Programming_Assignments/Programming_Assignments_3
+Programming_Assignments/Programming_Assignments_4
+Programming_Assignments/Programming_Assignments_5
