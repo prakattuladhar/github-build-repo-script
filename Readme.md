@@ -5,6 +5,7 @@ Create private GitHub repos for students, add them as collaborators, and seed ea
 ## Requirements
 
 - Python 3.9+ (Python 3.8 should work, but 3.9+ is recommended)
+- A GitHub organization (required). If you don't have one yet, create an org in GitHub and use its login name for `--org`.
 - A GitHub Personal Access Token with `repo` scope and access to the target org
 - `requests` library (installed via `requirements.txt`)
 
