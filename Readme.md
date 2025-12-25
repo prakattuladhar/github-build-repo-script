@@ -1,15 +1,23 @@
 # GitHub Bulk Repo Setup
 
-Create private GitHub repos for students, add them as collaborators, and seed each repo with a folder structure.
+Manage GitHub repos for a class. These scripts help you create student repos once, clone them for grading, revert work to a deadline, and optionally clean up local folders to keep only the assignment you are reviewing.
+
+## Scripts
+
+- `create_course_repos.py`: one-time setup to create private repos in an org, invite students as collaborators, and seed a folder structure.
+- `clone_org_repos.py`: clone all repos from an org into a local directory (supports filters and updates).
+- `revert_to_deadline.py`: reset each local repo to the last commit before a deadline (Central Time, 11:59 PM plus grace).
+- `cleanup_keep_dir.py`: optional cleanup to keep only a specific subdirectory inside each student repo.
 
 ## Requirements
 
-- Python 3.9+ (Python 3.8 should work, but 3.9+ is recommended)
-- A GitHub organization (required). If you don't have one yet, create an org in GitHub and use its login name for `--org`.
-- A GitHub Personal Access Token with `repo` scope and access to the target org
-- `requests` library (installed via `requirements.txt`)
+- Python 3.9+ (3.8 may work, but 3.9+ is recommended)
+- GitHub organization for student repos
+- GitHub Personal Access Token with `repo` scope (and org access)
+- `git` on PATH (for clone and revert scripts)
+- Dependencies in `requirements.txt`
 
-## Setup (Step-by-step)
+## Setup
 
 1) Create and activate a virtual environment (optional but recommended)
 
@@ -30,11 +38,11 @@ pip install -r requirements.txt
 export GITHUB_TOKEN="ghp_XXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 ```
 
-## Input Files
+## Input files
 
-### students.csv
+### `students.csv`
 
-CSV file with the headers `name` and `github_link`.
+CSV file with headers `name` and `github_link`.
 
 ```csv
 name,github_link
@@ -42,18 +50,18 @@ Ada Lovelace,https://github.com/ada
 Alan Turing,https://github.com/aturing
 ```
 
-### structure.txt
+### `structure.txt`
 
-Text file with one folder path per line.
+Text file with one folder path per line (used to seed student repos).
 
 ```text
 Exercises/Exercise_1
 Programming_Assignments/Programming_Assignment_1
 ```
 
-## Run the Script
+## Usage
 
-### Basic (dry-run)
+### 1) Create course repos (one-time setup)
 
 ```bash
 python3 create_course_repos.py \
@@ -63,8 +71,6 @@ python3 create_course_repos.py \
   --dry-run
 ```
 
-### Create repos for real
-
 ```bash
 python3 create_course_repos.py \
   --org ics365-fall-2025 \
@@ -72,29 +78,48 @@ python3 create_course_repos.py \
   --structure structure.txt
 ```
 
-### Use a different CSV or structure file
+Options: `--sleep` to slow down API calls, `--dry-run` to preview.
+
+### 2) Clone org repos
 
 ```bash
-python3 create_course_repos.py \
-  --org ics365-fall-2025 \
-  --csv students-prod.csv \
-  --structure structure.txt
+python3 clone_org_repos.py ics365-fall-2025 \
+  --dest ./ics365 \
+  --protocol https \
+  --shallow \
+  --update
 ```
 
-### Slow down API calls (rate limit safety)
+Options: `--match` / `--regex` to filter repo names, `--include-forks`, `--include-archived`.
+
+### 3) Revert to deadline
+
+Resets each local repo to the latest commit before the deadline date (Central Time, 11:59 PM + grace).
 
 ```bash
-python3 create_course_repos.py \
-  --org ics365-fall-2025 \
-  --sleep 0.75
+python3 revert_to_deadline.py --dir ./ics365 --date 2025-09-10 --dry-run
 ```
 
-## Options
+```bash
+python3 revert_to_deadline.py --dir ./ics365 --date 09/10/2025
+```
 
-Run `python3 create_course_repos.py --help` to see all options.
+Options: `--grace` to change the grace period, `--force` to override dirty working trees.
 
-- `--org` (required): GitHub org login, e.g. `ics365-fall-2025`
-- `--csv`: CSV file path (default: `students.csv`)
-- `--structure`: folder structure file (default: `structure.txt`)
-- `--sleep`: seconds between API calls (default: `0.35`)
-- `--dry-run`: print actions without calling GitHub API
+### 4) Cleanup keep dir (optional)
+
+Keeps only one subdirectory inside each student repo. This is destructive, so use `--dry-run` first.
+
+```bash
+python3 cleanup_keep_dir.py ./ics365 Programming_Assignments/Programming_Assignment_1 --dry-run
+```
+
+```bash
+python3 cleanup_keep_dir.py ./ics365 Programming_Assignments/Programming_Assignment_1
+```
+
+## Notes
+
+- `create_course_repos.py` requires `requests` from `requirements.txt`.
+- `clone_org_repos.py` and `revert_to_deadline.py` require `git` on PATH.
+- Use `--help` on any script for full options and defaults.
